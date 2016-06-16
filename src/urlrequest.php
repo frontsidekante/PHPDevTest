@@ -15,9 +15,9 @@
 
     <?php
     } else {
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=' . $_POST["name"] . '.csv');
         // returns a cURL resource, takes URL as parameter
-
-
         $curl = curl_init();
         // SETTING URL
         //curl_setopt($curl, CURLOPT_URL, 'http://api.goeuro.com/api/v2/position/suggest/en/berlin');
@@ -29,24 +29,24 @@
         CURLOPT_URL => 'http://api.goeuro.com/api/v2/position/suggest/en/' . $_POST["name"]
         ));
 
-        //echo $curl;
-
         // EXECUTES CURL-REQUEST
-        $result = curl_exec($curl);
+        $result = curl_exec($curl); // type -> string
 
+        $arrayResult = json_decode($result,true);
 
-        // CREATES FILE
-        $city = fopen(__DIR__ . "/.." . "/output/" . $_POST["name"] . ".txt", "w") or die("Unable to open file");
+        // TURN RESULT INTO CSV RESULT
+        $csvResult = "";
+        $csvResult .= "_id;name;type;latitude;longitude" . ";" . "\n";
+        foreach($arrayResult as $location) {
 
-        // fwrite(RESOURCE, STRING)
-        fwrite($city, $result);
-        fclose($city);
-        header("Content-type: text/csv");
-        header("Content-Disposition: attachment; filename=" . $_POST["name"] . ".csv");
+            $csvResult .= ($location["_id"] . ";");
+            $csvResult .= ($location["name"] . ";");
+            $csvResult .= ($location["type"] . ";");
+            $csvResult .= ($location["geo_position"]["latitude"] . ";");
+            $csvResult .= ($location["geo_position"]["longitude"] . ";" . "\n");
+        }
 
-        //echo $result;
-        //echo gettype($result);
-
+        echo $csvResult;
         // CLOSES CURL REQUEST
         curl_close($curl);
     }
