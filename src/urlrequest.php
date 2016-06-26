@@ -3,8 +3,11 @@
 // http://codular.com/curl-with-php
     if (!isset($_POST['submit'])) {
         ?>
-
+        <!DOCTYPE html>
         <html>
+            <head>
+                <title>Find City</title>
+            </head>
             <body>
                 <form action="urlrequest.php" method="post">
             City: <input type="text" name="name"><br>
@@ -16,7 +19,8 @@
     <?php
     } else {
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=' . $_POST["name"] . '.csv');
+        header('Content-Disposition: attachment; filename="' . $_POST["name"] . '.csv"');
+
         // returns a cURL resource, takes URL as parameter
         $curl = curl_init();
         // SETTING URL
@@ -38,7 +42,6 @@
         $csvResult = "";
         $csvResult .= "_id;name;type;latitude;longitude" . ";" . "\n";
         foreach($arrayResult as $location) {
-
             $csvResult .= ($location["_id"] . ";");
             $csvResult .= ($location["name"] . ";");
             $csvResult .= ($location["type"] . ";");
